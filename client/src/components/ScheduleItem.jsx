@@ -16,7 +16,6 @@ export default function ScheduleItem({ time, workout, status = 'upcoming', onPre
 
     return (
         <View style={styles.row}>
-            <AppText variant="subheading" muted style={styles.time}>{time}</AppText>
             <Card
                 onPress={onPress}
                 style={[styles.card, status === 'next' && styles.cardNext]}

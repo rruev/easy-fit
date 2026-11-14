@@ -13,7 +13,64 @@ datasource db {
 }
 
 model User {
-    id       String @id @default(cuid())
-    email    String @unique
-    password String
+    id        String     @id @default(cuid())
+    email     String     @unique
+    password  String
+    createdAt DateTime   @default(now())
+    workouts  Workout[]
+    exercises Exercise[]
+    schedule  Schedule?
+
+    @@map("users")
+}
+
+model Workout {
+    id        String            @id @default(cuid())
+    userId    String
+    name      String
+    category  String
+    createdAt DateTime          @default(now())
+    duration  Int
+    user      User              @relation(fields: [userId], references: [id])
+    schedules ScheduleWorkout[]
+    exercises Exercise[]
+
+    @@map("workouts")
+}
+
+model Exercise {
+    id        String    @id @default(cuid())
+    userId    String
+    name      String
+    sets      Int
+    reps      Int
+    category  String
+    createdAt DateTime  @default(now())
+    user      User      @relation(fields: [userId], references: [id])
+    workouts  Workout[]
+
+    @@map("exercises")
+}
+
+model Schedule {
+    id        String            @id @default(cuid())
+    userId    String            @unique
+    name      String
+    createdAt DateTime          @default(now())
+    workouts  ScheduleWorkout[]
+    user      User              @relation(fields: [userId], references: [id])
+
+    @@map("schedules")
+}
+
+model ScheduleWorkout {
+    scheduleId String
+    workoutId  String
+    day        Int
+    schedule   Schedule @relation(fields: [scheduleId], references: [id])
+    workout    Workout  @relation(fields: [workoutId], references: [id])
+
+    @@id([scheduleId, workoutId, day])
+
+    @@map("schedule_workouts")
 }
