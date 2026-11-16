@@ -39,15 +39,16 @@ model Workout {
 }
 
 model Exercise {
-    id        String    @id @default(cuid())
-    userId    String
-    name      String
-    sets      Int
-    reps      Int
-    category  String
-    createdAt DateTime  @default(now())
-    user      User      @relation(fields: [userId], references: [id])
-    workouts  Workout[]
+    id         String    @id @default(cuid())
+    userId     String
+    name       String
+    sets       Int
+    reps       Int
+    categoryId String
+    createdAt  DateTime  @default(now())
+    category   Category  @relation(fields: [categoryId], references: [id])
+    user       User      @relation(fields: [userId], references: [id])
+    workouts   Workout[]
 
     @@map("exercises")
 }
@@ -70,7 +71,16 @@ model ScheduleWorkout {
     schedule   Schedule @relation(fields: [scheduleId], references: [id])
     workout    Workout  @relation(fields: [workoutId], references: [id])
 
-    @@id([scheduleId, workoutId, day])
-
+    @@id([scheduleId, day])
     @@map("schedule_workouts")
+}
+
+model Category {
+    id        String   @id @default(cuid())
+    name      String   @unique
+    createdAt DateTime @default(now())
+
+    exercises Exercise[]
+
+    @@map("categories")
 }
