@@ -8,6 +8,8 @@ import Button from '../components/Button';
 import { colors, spacing } from '../theme';
 
 export default function LoginScreen({ navigation }) {
+    
+
     return (
         <Screen scroll edges={['top', 'bottom', 'left', 'right']}>
             <AuthHeader title="Welcome back" subtitle="Log in to keep track of your training" />

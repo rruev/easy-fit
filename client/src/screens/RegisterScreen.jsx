@@ -1,5 +1,6 @@
 import { View, StyleSheet } from 'react-native';
 import { useState } from 'react';
+import { useUser } from '../hooks/useUser';
 
 import Screen from '../components/Screen';
 import AppText from '../components/AppText';
@@ -10,15 +11,24 @@ import Button from '../components/Button';
 import { colors, spacing } from '../theme';
 
 export default function RegisterScreen({ navigation }) {
+    const { register } = useUser();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
-    const handleCreateAccount = () => {
-      console.log('Create account clicked');  
-      console.log('Email:', email);
-      console.log('Password:', password);
-      console.log('Confirm Password:', confirmPassword);
+    const handleCreateAccount = async () => {
+        setLoading(true);
+        try {
+            setError(null);
+            await register({email, password, confirmPassword});
+        } catch (err) {
+            setError(err.response?.data?.errors);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -35,6 +45,7 @@ export default function RegisterScreen({ navigation }) {
                 value={email}
                 onChangeText={setEmail}
             />
+            {error?.email && <AppText color={colors.error}>{error.email}</AppText>}
             <TextField
                 label="Password"
                 name="password"
@@ -44,6 +55,7 @@ export default function RegisterScreen({ navigation }) {
                 value={password}
                 onChangeText={setPassword}
             />
+            {error?.password && <AppText color={colors.error}>{error.password}</AppText>}
             <TextField
                 label="Confirm password"
                 name="confirmPassword"
@@ -53,8 +65,10 @@ export default function RegisterScreen({ navigation }) {
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
             />
+            {error?.confirmPassword && <AppText color={colors.error}>{error.confirmPassword}</AppText>}
 
-            <Button title="Create account" onPress={handleCreateAccount} />
+            <Button title="Create account" onPress={handleCreateAccount} loading={loading} />
+            {error?.general && <AppText color={colors.error}>{error.general}</AppText>}
 
             <View style={styles.footer}>
                 <AppText muted>Already have an account?</AppText>

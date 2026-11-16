@@ -14,6 +14,7 @@ export const register = async (userData) => {
         const response = await api.post('auth/register', userData);
         return response.data;
     } catch (error) {
+        console.error(error.response.data);
         throw error;
     }
 };
@@ -32,7 +33,7 @@ export const getUser = async () => {
         const response = await api.get('auth/me');
         return response.data;
     } catch (error) {
-        console.log(error);
+        console.error(error.response.data);
         throw error;
     }
 };
