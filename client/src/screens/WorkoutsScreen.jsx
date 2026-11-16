@@ -4,7 +4,8 @@ import Screen from '../components/Screen';
 import Chip from '../components/Chip';
 import WorkoutCard from '../components/WorkoutCard';
 import FloatingButton from '../components/FloatingButton';
-import { categories, workouts } from '../data/mockData';
+import NavCard from '../components/NavCard';
+import { categories, exercises, workouts } from '../data/mockData';
 import { categoryColors, spacing } from '../theme';
 
 const selectedCategory = 'All';
@@ -12,6 +13,8 @@ const selectedCategory = 'All';
 export default function WorkoutsScreen({ navigation }) {
     const openDetails = () =>
         navigation.navigate('WorkoutNavigator', { screen: 'WorkoutDetails' });
+    const openExercises = () =>
+        navigation.navigate('WorkoutNavigator', { screen: 'Exercises' });
     const openAddEdit = () =>
         navigation.navigate('WorkoutNavigator', { screen: 'AddEditWorkout' });
 
@@ -22,6 +25,13 @@ export default function WorkoutsScreen({ navigation }) {
                 keyExtractor={(workout) => workout.id}
                 renderItem={({ item }) => <WorkoutCard workout={item} onPress={openDetails} />}
                 ListHeaderComponent={
+                    <View style={styles.header}>
+                    <NavCard
+                        icon="list-alt"
+                        title="Exercise library"
+                        subtitle={`${exercises.length} exercises · add, edit and remove`}
+                        onPress={openExercises}
+                    />
                     <ScrollView
                         horizontal
                         showsHorizontalScrollIndicator={false}
@@ -37,6 +47,7 @@ export default function WorkoutsScreen({ navigation }) {
                             />
                         ))}
                     </ScrollView>
+                    </View>
                 }
                 ItemSeparatorComponent={() => <View style={styles.separator} />}
                 contentContainerStyle={styles.list}
@@ -51,9 +62,12 @@ const styles = StyleSheet.create({
         padding: spacing.lg,
         paddingBottom: 100,
     },
+    header: {
+        gap: spacing.lg,
+        paddingBottom: spacing.lg,
+    },
     filters: {
         gap: spacing.sm,
-        paddingBottom: spacing.lg,
     },
     separator: {
         height: spacing.md,

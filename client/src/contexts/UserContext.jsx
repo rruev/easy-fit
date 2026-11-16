@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useMemo, useCallback } from 'react';
-import { authService } from '../services';
+import { authService, userService } from '../services';
 
 export const UserContext = createContext();
 
@@ -11,7 +11,8 @@ export const UserProvider = ({ children }) => {
             const userData = await authService.login(credentials);
             setUser(userData);
         } catch (error) {
-            console.error(error);
+            console.error(error.response?.data?.errors);
+            throw error;
         }
     }, []);
 
@@ -29,7 +30,8 @@ export const UserProvider = ({ children }) => {
             await authService.logout();
             setUser(null);
         } catch (error) {
-            console.error(error);
+            console.error(error.response?.data?.errors);
+            throw error;
         }
     }, []);
 
@@ -38,7 +40,17 @@ export const UserProvider = ({ children }) => {
             const userData = await authService.getUser();
             setUser(userData);
         } catch (error) {
-            console.error(error);
+            console.error(error.response?.data?.errors);
+        }
+    }, []);
+
+    const deleteAccount = useCallback(async (userId) => {
+        try {
+            await userService.remove(userId);
+            setUser(null);
+        } catch (error) {
+            console.error(error.response?.data?.errors);
+            throw error;
         }
     }, []);
 
@@ -52,14 +64,16 @@ export const UserProvider = ({ children }) => {
         fetchUser,
         login,
         register,
-        logout
+        logout,
+        deleteAccount
     }), [
         user, 
         setUser, 
         fetchUser,
         login,
         register,
-        logout
+        logout,
+        deleteAccount
     ]);
 
     return <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>;

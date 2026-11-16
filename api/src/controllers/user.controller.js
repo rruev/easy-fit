@@ -20,6 +20,11 @@ export const remove = async (req, res) => {
     const userId = req.params.id;
     try {
         await userService.remove(userId);
+        res.clearCookie("auth-token", {
+            httpOnly: true,
+            secure: true,
+            sameSite: "None",
+        });
         res.json({ message: "User removed successfully" });
     } catch (error) {
         res.status(400).json({ error: getErrors(error) });

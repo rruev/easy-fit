@@ -37,6 +37,15 @@ export const categoryColors = {
     Mobility: '#B18CFF',
 };
 
+export const exerciseCategoryColors = {
+    Chest: '#FF8A4C',
+    Back: '#4CC9F0',
+    Shoulders: '#B18CFF',
+    Arms: '#FF5D6C',
+    Legs: '#B6F34A',
+    Core: '#FFB84C',
+};
+
 // React Navigation reads this to style headers, tab bars and screen backgrounds
 export const navigationTheme = {
     ...DarkTheme,

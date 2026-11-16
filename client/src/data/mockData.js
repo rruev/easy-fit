@@ -135,3 +135,20 @@ export const categoryStats = [
     { category: 'HIIT', count: 4 },
     { category: 'Mobility', count: 2 },
 ];
+
+export const exerciseCategories = ['Chest', 'Back', 'Shoulders', 'Arms', 'Legs', 'Core'];
+
+export const exercises = [
+    { id: 'e1', name: 'Bench Press', category: 'Chest', sets: 4, target: '8 reps' },
+    { id: 'e2', name: 'Bent-over Row', category: 'Back', sets: 4, target: '8 reps' },
+    { id: 'e3', name: 'Overhead Press', category: 'Shoulders', sets: 3, target: '10 reps' },
+    { id: 'e4', name: 'Pull-ups', category: 'Back', sets: 3, target: '6 reps' },
+    { id: 'e5', name: 'Dumbbell Curl', category: 'Arms', sets: 3, target: '12 reps' },
+    { id: 'e6', name: 'Back Squat', category: 'Legs', sets: 5, target: '5 reps' },
+    { id: 'e7', name: 'Romanian Deadlift', category: 'Legs', sets: 4, target: '8 reps' },
+    { id: 'e8', name: 'Walking Lunges', category: 'Legs', sets: 3, target: '12 reps' },
+    { id: 'e9', name: 'Plank', category: 'Core', sets: 3, target: '60 sec' },
+    { id: 'e10', name: 'Triceps Dips', category: 'Arms', sets: 3, target: '10 reps' },
+];
+
+export const getExerciseById = (id) => exercises.find((exercise) => exercise.id === id);

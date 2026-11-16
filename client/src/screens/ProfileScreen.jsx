@@ -1,4 +1,5 @@
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
+import { useUser } from '../hooks/useUser';
 
 import Screen from '../components/Screen';
 import AppText from '../components/AppText';
@@ -6,26 +7,41 @@ import Avatar from '../components/Avatar';
 import Card from '../components/Card';
 import ListRow from '../components/ListRow';
 import Button from '../components/Button';
-import { user } from '../data/mockData';
 import { spacing } from '../theme';
 
 export default function ProfileScreen() {
+    const { user, logout, deleteAccount } = useUser();
+
+    const handleLogout = async () => {
+        await logout();
+    };
+
+    const handleDeleteAccount = async () => {
+        Alert.alert(
+            'Delete Account',
+            'Are you sure you want to delete your account? This action cannot be undone.',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Delete', style: 'destructive', onPress: async () => await deleteAccount(user.id) }
+            ]
+        );
+    };
+
     return (
         <Screen scroll>
             <View style={styles.header}>
-                <Avatar name={user.name} />
-                <AppText variant="heading">{user.name}</AppText>
+                <Avatar name={user.email} />
+                <AppText variant="heading">{user.name || user.email}</AppText>
                 <AppText muted>{user.email}</AppText>
             </View>
 
             <Card>
                 <ListRow icon="edit" label="Edit profile" />
                 <ListRow icon="photo-camera" label="Change avatar" />
-                <ListRow icon="calendar-today" label="Member since" value={user.memberSince} showChevron={false} />
             </Card>
 
-            <Button title="Log out" variant="secondary" icon="logout" />
-            <Button title="Delete account" variant="danger" icon="delete-outline" />
+            <Button title="Log out" variant="secondary" icon="logout" onPress={handleLogout} />
+            <Button title="Delete account" variant="danger" icon="delete-outline" onPress={handleDeleteAccount} />
         </Screen>
     );
 }
