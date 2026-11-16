@@ -8,9 +8,9 @@ const excerciseRouter = Router();
 
 excerciseRouter.get("/", isAuthenticated, exerciseController.getAll);
 excerciseRouter.post("/", isAuthenticated, exerciseController.create);
+excerciseRouter.get("/categories", isAuthenticated, exerciseController.getCategories);
 excerciseRouter.get("/:id", isAuthenticated, exerciseController.getById);
 excerciseRouter.put("/:id", isAuthenticated, exerciseController.update);
 excerciseRouter.delete("/:id", isAuthenticated, exerciseController.remove);
-excerciseRouter.get("/categories", isAuthenticated, exerciseController.getCategories);
 
 export default excerciseRouter;

@@ -42,6 +42,9 @@ export const remove = async (exerciseId, userId) => {
 export const getCategories = async (userId) => {
     return await prisma.exercise.findMany({
         where: { userId: userId },
-        distinct: ["category"]
+        distinct: ["category"],
+        select: {
+            category: true
+        }
     });
 };
