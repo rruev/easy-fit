@@ -25,27 +25,41 @@ model User {
 }
 
 model Workout {
-    id        String            @id @default(cuid())
-    userId    String
-    name      String
-    category  String
-    createdAt DateTime          @default(now())
-    duration  Int
-    user      User              @relation(fields: [userId], references: [id])
-    schedules ScheduleWorkout[]
-    exercises Exercise[]
+    id         String            @id @default(cuid())
+    userId     String
+    name       String
+    categoryId String
+    createdAt  DateTime          @default(now())
+    duration   Int
+    user       User              @relation(fields: [userId], references: [id])
+    scheduled  ScheduleWorkout[]
+    exercises  WorkoutExercise[]
+    category   WorkoutCategory   @relation(fields: [categoryId], references: [id])
 
     @@map("workouts")
 }
 
+model WorkoutExercise {
+    workoutId  String
+    exerciseId String
+    sets       Int
+    reps       Int
+    workout    Workout  @relation(fields: [workoutId], references: [id])
+    exercise   Exercise @relation(fields: [exerciseId], references: [id])
+
+    @@id([workoutId, exerciseId])
+    @@map("workout_exercises")
+}
+
 model Exercise {
-    id         String    @id @default(cuid())
+    id         String           @id @default(cuid())
     userId     String
+    categoryId String
     name       String
-    category   String
-    createdAt  DateTime  @default(now())
-    user       User      @relation(fields: [userId], references: [id])
-    workouts   Workout[]
+    createdAt  DateTime         @default(now())
+    user       User             @relation(fields: [userId], references: [id])
+    workouts   WorkoutExercise[]
+    category   ExerciseCategory @relation(fields: [categoryId], references: [id])
 
     @@map("exercises")
 }
@@ -62,12 +76,32 @@ model Schedule {
 }
 
 model ScheduleWorkout {
-    scheduleId String
-    workoutId  String
-    day        Int
-    schedule   Schedule @relation(fields: [scheduleId], references: [id])
-    workout    Workout  @relation(fields: [workoutId], references: [id])
+    scheduleWorkoutId String   @id @default(cuid())
+    scheduleId        String
+    workoutId         String
+    day               Int
+    schedule          Schedule @relation(fields: [scheduleId], references: [id])
+    workout           Workout  @relation(fields: [workoutId], references: [id])
 
-    @@id([scheduleId, day])
     @@map("schedule_workouts")
+}
+
+model ExerciseCategory {
+    id    String @id @default(cuid())
+    name  String @unique
+    color String
+
+    exercises Exercise[]
+
+    @@map("exercise_categories")
+}
+
+model WorkoutCategory {
+    id    String @id @default(cuid())
+    name  String @unique
+    color String
+
+    workouts Workout[]
+
+    @@map("workout_categories")
 }

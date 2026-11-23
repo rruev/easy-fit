@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, ActivityIndicator } from 'react-native';
 import Icon from '@expo/vector-icons/MaterialIcons';
 
 import AppText from './AppText';
@@ -10,7 +10,7 @@ const variants = {
     danger: { backgroundColor: 'transparent', borderColor: colors.danger, textColor: colors.danger },
 };
 
-export default function Button({ title, icon, variant = 'primary', onPress, style }) {
+export default function Button({ title, icon, variant = 'primary', onPress, style, loading=false }) {
     const { backgroundColor, borderColor, textColor } = variants[variant];
 
     return (
@@ -22,9 +22,16 @@ export default function Button({ title, icon, variant = 'primary', onPress, styl
                 style,
                 pressed && styles.pressed,
             ]}
+            disabled={loading}
         >
-            {icon && <Icon name={icon} size={20} color={textColor} />}
-            <AppText variant="subheading" color={textColor}>{title}</AppText>
+            {loading ? (
+                <ActivityIndicator size="small" color={textColor} />
+            ) : (
+                <>
+                    {icon && <Icon name={icon} size={20} color={textColor} />}
+                    <AppText variant="subheading" color={textColor}>{title}</AppText>
+                </>
+            )}
         </Pressable>
     );
 }

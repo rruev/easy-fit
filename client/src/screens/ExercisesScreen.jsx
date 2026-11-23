@@ -1,4 +1,6 @@
-import { FlatList, ScrollView, StyleSheet, View } from 'react-native';
+import { FlatList, ScrollView, StyleSheet, View, ActivityIndicator } from 'react-native';
+import { useState } from 'react';
+import { exerciseCategoryColors, spacing } from '../theme';
 
 import Screen from '../components/Screen';
 import AppText from '../components/AppText';
@@ -6,13 +8,19 @@ import TextField from '../components/TextField';
 import Chip from '../components/Chip';
 import ExerciseListItem from '../components/ExerciseListItem';
 import FloatingButton from '../components/FloatingButton';
-import { exerciseCategories, exercises } from '../data/mockData';
-import { exerciseCategoryColors, spacing } from '../theme';
 
-const selectedCategory = 'All';
+import useItem from '../hooks/useItem';
+import useCategories from '../hooks/useCategories';
+import { exerciseService } from '../services';
 
 export default function ExercisesScreen({ navigation }) {
+    const { items: exercises, loading: exercisesLoading, fetchItems } = useItem(exerciseService, null);
+    const { categories } = useCategories(exerciseService);
+    const [selectedCategory, setSelectedCategory] = useState('All');
+
     const openForm = (exerciseId) => navigation.navigate('ExerciseForm', { exerciseId });
+
+    const handleSearch = async (text) => await fetchItems({ search: text });
 
     return (
         <Screen edges={['left', 'right', 'bottom']}>
@@ -28,23 +36,25 @@ export default function ExercisesScreen({ navigation }) {
                 )}
                 ListHeaderComponent={
                     <View style={styles.header}>
-                        <TextField icon="search" placeholder="Search exercises" />
+                        <TextField icon="search" placeholder="Search exercises" onChangeText={handleSearch} />
                         <ScrollView
                             horizontal
                             showsHorizontalScrollIndicator={false}
                             contentContainerStyle={styles.filters}
                         >
-                            <Chip label="All" selected={selectedCategory === 'All'} />
-                            {exerciseCategories.map((category) => (
+                            <Chip label="All" selected={selectedCategory === 'All'} onPress={() => setSelectedCategory('All')} />
+                            {categories.map((category) => (
                                 <Chip
                                     key={category}
                                     label={category}
-                                    color={exerciseCategoryColors[category]}
+                                    color={category.color}
                                     selected={selectedCategory === category}
+                                    onPress={() => setSelectedCategory(category)}
                                 />
                             ))}
                         </ScrollView>
                         <AppText variant="caption" muted>{exercises.length} EXERCISES</AppText>
+                        {exercisesLoading && <ActivityIndicator size="small" color="primary" />}
                     </View>
                 }
                 ItemSeparatorComponent={() => <View style={styles.separator} />}

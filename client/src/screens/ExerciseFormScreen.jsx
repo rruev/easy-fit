@@ -5,8 +5,12 @@ import AppText from '../components/AppText';
 import TextField from '../components/TextField';
 import Chip from '../components/Chip';
 import Button from '../components/Button';
-import { exerciseCategories, getExerciseById } from '../data/mockData';
+
+// import { exerciseCategories, getExerciseById } from '../data/mockData';
+import useItem from '../hooks/useItem';
+import { exerciseService } from '../services';
 import { exerciseCategoryColors, spacing } from '../theme';
+
 
 export default function ExerciseFormScreen({ route }) {
     // No exerciseId means we are adding a new exercise
