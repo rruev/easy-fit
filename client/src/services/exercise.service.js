@@ -49,13 +49,3 @@ export const remove = async (exerciseId) => {
         throw error;
     }
 };
-
-export const getCategories = async () => {
-    try {
-        const response = await api.get("/exercises/categories");
-        return response.data;
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
-};

@@ -5,7 +5,9 @@ export const create = async (userId, data) => {
 };
 
 export const getAll = async (userId, filter) => {
-    return await exerciseRepo.getAll(userId, filter);
+    const exercises = await exerciseRepo.getAll(userId, filter);
+    const count = await exerciseRepo.getCount(userId, filter);
+    return { exercises, count };
 };
 
 export const getById = async (exerciseId) => {
@@ -18,10 +20,4 @@ export const update = async (exerciseId, userId, data) => {
 
 export const remove = async (exerciseId, userId) => {
     return await exerciseRepo.remove(exerciseId, userId);
-};
-
-export const getCategories = async (userId) => {
-    const data = await exerciseRepo.getCategories(userId);
-    const categories = data.map(item => item.category);
-    return categories;
 };

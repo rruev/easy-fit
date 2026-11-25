@@ -7,7 +7,7 @@ export default function useCategories(service) {
     const fetchCategories = async () => {
         try {
             setLoading(true);
-            const data = await service.getCategories();
+            const data = await service.getAll();
             setCategories(data);
             setLoading(false);
         } catch (error) {

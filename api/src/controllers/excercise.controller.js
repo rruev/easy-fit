@@ -55,13 +55,3 @@ export const remove = async (req, res) => {
         res.status(400).json({ error: getErrors(error) });
     }
 };
-
-export const getCategories = async (req, res) => {
-    const userId = req.user.id;
-    try {
-        const categories = await exerciseService.getCategories(userId);
-        res.status(200).json(categories);
-    } catch (error) {
-        res.status(400).json({ error: getErrors(error) });
-    }   
-};

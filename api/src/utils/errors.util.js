@@ -17,6 +17,8 @@ export const getErrors = (error) => {
         errors = { password: ['Invalid password'] };
     } else if (error.name === 'UserNotFound') {
         errors = { email: ['User with this email does not exist'] };
+    } else if (error.code === "P2002") {
+        errors = { error: { general: ["A category with this value already exists"] } };
     } else {
         errors = { general: ['An unexpected error occurred'], error: error.message };
     }

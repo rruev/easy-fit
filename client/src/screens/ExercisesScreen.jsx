@@ -14,7 +14,7 @@ import useCategories from '../hooks/useCategories';
 import { exerciseService } from '../services';
 
 export default function ExercisesScreen({ navigation }) {
-    const { items: exercises, loading: exercisesLoading, fetchItems } = useItem(exerciseService, null);
+    const { items, loading: exercisesLoading, fetchItems } = useItem(exerciseService, null);
     const { categories } = useCategories(exerciseService);
     const [selectedCategory, setSelectedCategory] = useState('All');
 
@@ -25,7 +25,7 @@ export default function ExercisesScreen({ navigation }) {
     return (
         <Screen edges={['left', 'right', 'bottom']}>
             <FlatList
-                data={exercises}
+                data={items.exercises}
                 keyExtractor={(exercise) => exercise.id}
                 renderItem={({ item }) => (
                     <ExerciseListItem
@@ -53,7 +53,7 @@ export default function ExercisesScreen({ navigation }) {
                                 />
                             ))}
                         </ScrollView>
-                        <AppText variant="caption" muted>{exercises.length} EXERCISES</AppText>
+                        <AppText variant="caption" muted>{items.count} EXERCISES</AppText>
                         {exercisesLoading && <ActivityIndicator size="small" color="primary" />}
                     </View>
                 }

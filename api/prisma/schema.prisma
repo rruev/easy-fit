@@ -31,35 +31,43 @@ model Workout {
     categoryId String
     createdAt  DateTime          @default(now())
     duration   Int
-    user       User              @relation(fields: [userId], references: [id])
+    user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
     scheduled  ScheduleWorkout[]
     exercises  WorkoutExercise[]
-    category   WorkoutCategory   @relation(fields: [categoryId], references: [id])
+    category   WorkoutCategory   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
     @@map("workouts")
 }
 
+enum TargetType {
+    reps
+    time
+}
+
 model WorkoutExercise {
-    workoutId  String
-    exerciseId String
-    sets       Int
-    reps       Int
-    workout    Workout  @relation(fields: [workoutId], references: [id])
-    exercise   Exercise @relation(fields: [exerciseId], references: [id])
+    workoutId   String
+    exerciseId  String
+    position    Int 
+    sets        Int
+    targetType  TargetType @default(reps)
+    target      Int 
+    restSeconds Int        @default(0)
+    workout     Workout    @relation(fields: [workoutId], references: [id])
+    exercise    Exercise   @relation(fields: [exerciseId], references: [id])
 
     @@id([workoutId, exerciseId])
     @@map("workout_exercises")
 }
 
 model Exercise {
-    id         String           @id @default(cuid())
+    id         String            @id @default(cuid())
     userId     String
     categoryId String
     name       String
-    createdAt  DateTime         @default(now())
-    user       User             @relation(fields: [userId], references: [id])
+    createdAt  DateTime          @default(now())
+    user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
     workouts   WorkoutExercise[]
-    category   ExerciseCategory @relation(fields: [categoryId], references: [id])
+    category   ExerciseCategory  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
     @@map("exercises")
 }
@@ -70,7 +78,7 @@ model Schedule {
     name      String
     createdAt DateTime          @default(now())
     workouts  ScheduleWorkout[]
-    user      User              @relation(fields: [userId], references: [id])
+    user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@map("schedules")
 }
@@ -91,7 +99,7 @@ model ExerciseCategory {
     name  String @unique
     color String
 
-    exercises Exercise[]
+    exercises Exercise[] 
 
     @@map("exercise_categories")
 }

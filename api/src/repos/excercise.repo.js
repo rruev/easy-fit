@@ -39,12 +39,15 @@ export const remove = async (exerciseId, userId) => {
     });
 };
 
-export const getCategories = async (userId) => {
-    return await prisma.exercise.findMany({
-        where: { userId: userId },
-        distinct: ["category"],
-        select: {
-            category: true
+
+export const getCount = async (userId, filter) => {
+    return await prisma.exercise.count({
+        where: {
+            userId: userId,
+            name: {
+                contains: filter.search || "",
+                mode: "insensitive"
+            }
         }
     });
 };
