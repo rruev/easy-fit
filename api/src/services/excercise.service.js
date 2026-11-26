@@ -5,6 +5,7 @@ export const create = async (userId, data) => {
 };
 
 export const getAll = async (userId, filter) => {
+    filter.skip = Number(filter.skip) || 0;
     const exercises = await exerciseRepo.getAll(userId, filter);
     const count = await exerciseRepo.getCount(userId, filter);
     return { exercises, count };

@@ -23,15 +23,18 @@ export default function ExercisesScreen({ navigation }) {
 
     useFocusEffect(
         useCallback(() => {
-            fetchItems({ search: search, category: selectedCategory });
-        }, [])
+            const fetchData = async () => {
+                await fetchItems({ search: search, category: selectedCategory });
+            };
+            fetchData();
+        }, [search, selectedCategory])
     );
 
     const openForm = (exerciseId) => navigation.navigate('ExerciseForm', { exerciseId });
 
     const handleSearch = async (text) => {
         setSearch(text);
-        await fetchItems({ search: text });
+        await fetchItems({ search: text, category: selectedCategory });
     };
 
     const handleSelectedCategory = async (categoryId) => {
@@ -102,6 +105,7 @@ export default function ExercisesScreen({ navigation }) {
                 }
                 ItemSeparatorComponent={() => <View style={styles.separator} />}
                 contentContainerStyle={styles.list}
+                onEndReached={() => fetchItems({ search: search, category: selectedCategory, skip: items.length })}
             />
             <FloatingButton onPress={() => openForm()} />
         </Screen>
