@@ -5,7 +5,7 @@ export const getAll = async (filter, signal) => {
         const response = await api.get("/exercises", { params: filter, signal });
         return response.data;
     } catch (error) {
-        console.error(error);
+        console.error(JSON.stringify(error.response.data));
         throw error;
     }
 };
@@ -25,7 +25,7 @@ export const getById = async (exerciseId, signal) => {
         const response = await api.get(`/exercises/${exerciseId}`, { signal });
         return response.data;
     } catch (error) {
-        console.error(error);
+        console.error(JSON.stringify(error.response.data));
         throw error;
     }
 };
@@ -35,7 +35,7 @@ export const update = async (exerciseId, data) => {
         const response = await api.put(`/exercises/${exerciseId}`, data);
         return response.data;
     } catch (error) {
-        console.error(error);
+        console.error(JSON.stringify(error.response.data));
         throw error;
     }
 };
@@ -45,7 +45,7 @@ export const remove = async (exerciseId) => {
         const response = await api.delete(`/exercises/${exerciseId}`);
         return response.data;
     } catch (error) {
-        console.error(error);
+        console.error(JSON.stringify(error.response.data));
         throw error;
     }
 };

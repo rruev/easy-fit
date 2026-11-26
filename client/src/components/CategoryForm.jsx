@@ -13,10 +13,20 @@ import { colors, exerciseCategoryColors, radius, spacing } from '../theme';
 export default function CategoryForm({ category, onCancel, onAction, loading, error }) {
     const [name, setName] = useState(category?.name ?? '');
     const [color, setColor] = useState(category?.color ?? colors.primary);
+    const [validationError, setValidationError] = useState(null);
 
     const handleAction = async() => {
-        await onAction({ name, color });
-        if (!error) {
+        if (!name) {
+            setValidationError({ name: 'Name is required' });
+            return;
+        }
+        setValidationError(null);
+
+        if (category) {
+            await onAction(category.id, { name, color });
+            onCancel();
+        } else {
+            await onAction({ name, color });
             onCancel();
         }
     }
@@ -59,6 +69,7 @@ export default function CategoryForm({ category, onCancel, onAction, loading, er
                 onPress={handleAction}
                 loading={loading}
             />
+            {validationError?.name && <AppText variant="caption" style={{ color: colors.danger }}>{validationError.name}</AppText>} 
             {error && <AppText variant="caption" style={{ color: colors.danger }}>{error.general}</AppText>}
             <Button title="Cancel" variant="secondary" onPress={onCancel} />
         </Card>

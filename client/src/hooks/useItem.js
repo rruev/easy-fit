@@ -1,7 +1,6 @@
-import { useCallback, useState } from "react";
-import { useFocusEffect } from "@react-navigation/native";
+import { useEffect, useState } from "react";
 
-export default function useItem(service, itemId, addMode=false) {
+export default function useItem(service, itemId, addMode = false) {
     const [items, setItems] = useState([]);
     const [item, setItem] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -9,6 +8,7 @@ export default function useItem(service, itemId, addMode=false) {
     const fetchItems = async (filter = {}, signal) => {
         try {
             setLoading(true);
+            setItems([]);
             const data = await service.getAll(filter, signal);
             setItems(data);
             setLoading(false);
@@ -34,7 +34,7 @@ export default function useItem(service, itemId, addMode=false) {
         try {
             setLoading(true);
             const newItem = await service.create(data);
-            setItems(prevItems => [...prevItems, newItem]);
+            setItems(prevItems => ({ ...prevItems, exercises: [...prevItems.exercises, newItem] }));
             setLoading(false);
         } catch (error) {
             console.error(error);
@@ -46,7 +46,7 @@ export default function useItem(service, itemId, addMode=false) {
         try {
             setLoading(true);
             const updatedItem = await service.update(itemId, data);
-            setItems(prevItems => prevItems.map(item => item.id === itemId ? updatedItem : item));
+            setItems(prevItems => ({ ...prevItems, exercises: prevItems.exercises.map(item => item.id === itemId ? updatedItem : item) }));
             setLoading(false);
         } catch (error) {
             console.error(error);
@@ -54,11 +54,11 @@ export default function useItem(service, itemId, addMode=false) {
         }
     };
 
-    const deleteItem = async () => {
+    const deleteItem = async (id) => {
         try {
             setLoading(true);
-            await service.remove(itemId);
-            setItems(prevItems => prevItems.filter(item => item.id !== itemId));
+            await service.remove(id);
+            setItems(prevItems => ({ ...prevItems, exercises: prevItems.exercises.filter(item => item.id !== id) }));
             setLoading(false);
         } catch (error) {
             console.error(error);
@@ -66,24 +66,23 @@ export default function useItem(service, itemId, addMode=false) {
         }
     };
 
-    useFocusEffect(
-        useCallback(() => {
-            const controller = new AbortController();
-            const signal = controller.signal;
+    useEffect(() => {
+        const controller = new AbortController();
+        const signal = controller.signal;
 
-            if (addMode) {
-                return () => controller.abort();
-            }
-
-            if (itemId) {
-                fetchItem(signal);
-            } else {
-                fetchItems({}, signal);
-            }
-
+        if (addMode) {
             return () => controller.abort();
-        }, [itemId, addMode])
-    );
+        }
+
+        if (itemId) {
+            fetchItem(signal);
+        } else {
+            fetchItems({}, signal);
+        }
+
+        return () => controller.abort();
+
+    }, [itemId, addMode]);
 
     return {
         items,

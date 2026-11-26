@@ -3,17 +3,16 @@ import { View, StyleSheet } from 'react-native';
 import Card from './Card';
 import AppText from './AppText';
 import IconButton from './IconButton';
-import { exerciseCategoryColors, spacing } from '../theme';
+import { spacing } from '../theme';
 
 export default function ExerciseListItem({ exercise, onPress, onEdit, onDelete }) {
-    const accent = exerciseCategoryColors[exercise.category];
 
     return (
         <Card onPress={onPress} style={styles.card}>
-            <View style={[styles.stripe, { backgroundColor: accent }]} />
+            <View style={[styles.stripe, { backgroundColor: exercise.category.color }]} />
             <View style={styles.info}>
                 <AppText variant="subheading">{exercise.name}</AppText>
-                {/* <AppText variant="caption" color={accent}>{exercise.category.toUpperCase()}</AppText> */}
+                <AppText variant="caption" color={exercise.category.color}>{exercise.category.name.toUpperCase()}</AppText>
                 {/* <AppText variant="caption" muted>
                     {exercise.sets} sets · {exercise.target}
                 </AppText> */}

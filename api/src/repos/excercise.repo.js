@@ -13,7 +13,8 @@ export const getAll = async (userId, filter) => {
             name: {
                 contains: filter.search || "",
                 mode: "insensitive"
-            }
+            },
+            categoryId: filter.category || undefined
         },
         take: filter.limit || 10,
         skip: filter.skip || 0,
@@ -53,7 +54,8 @@ export const getCount = async (userId, filter) => {
             name: {
                 contains: filter.search || "",
                 mode: "insensitive"
-            }
+            },
+            categoryId: filter.category || undefined
         }
     });
 };

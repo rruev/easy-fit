@@ -30,11 +30,35 @@ export default function useCategories(service) {
         }
     };
 
+    const updateCategory = async (categoryId, updatedCategory) => {
+        try {
+            setLoading(true);
+            const editedCategory = await service.update(categoryId, updatedCategory);
+            setCategories((prev) => prev.map((category) => category.id === categoryId ? editedCategory : category));
+            setLoading(false);
+        } catch (error) {
+            setError(error);
+            setLoading(false);
+        }
+    };
+
+    const deleteCategory = async (categoryId) => {
+        try {
+            setLoading(true);
+            await service.remove(categoryId);
+            setCategories((prev) => prev.filter((category) => category.id !== categoryId));
+            setLoading(false);
+        } catch (error) {
+            setError(error);
+            setLoading(false);
+        }
+    };
+
     useFocusEffect(
         useCallback(() => {
             fetchCategories();
         }, [])
     );
 
-    return { categories, loading, error, addCategory };
+    return { categories, loading, error, addCategory, updateCategory, deleteCategory };
 }

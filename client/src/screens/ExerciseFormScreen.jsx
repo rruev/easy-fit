@@ -1,4 +1,4 @@
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 
 import Screen from '../components/Screen';
 import AppText from '../components/AppText';
@@ -8,22 +8,20 @@ import Button from '../components/Button';
 import Card from '../components/Card';
 import CategoryForm from '../components/CategoryForm';
 
-// import { exerciseCategories, getExerciseById } from '../data/mockData';
 import { useEffect, useState } from 'react';
 import useCategories from '../hooks/useCategories';
 import useItem from '../hooks/useItem';
 import { exerciseCategoriesService } from '../services';
 import { exerciseService } from '../services';
-import { exerciseCategoryColors, spacing } from '../theme';
+import { spacing } from '../theme';
 
 
 export default function ExerciseFormScreen({ navigation, route }) {
     // No exerciseId means we are adding a new exercise
     const exerciseId = route.params?.exerciseId;
     const addMode = exerciseId ? false : true;
-    const { item: exercise, loading: exerciseLoading, createItem, updateItem } = useItem(exerciseService, exerciseId, addMode);
-    console.log(exercise);
-    const { categories, loading: categoriesLoading, addCategory, error: categoriesError } = useCategories(exerciseCategoriesService);
+    const { item: exercise, loading: exerciseLoading, createItem, updateItem, deleteItem } = useItem(exerciseService, exerciseId, addMode);
+    const { categories, loading: categoriesLoading, addCategory, error: categoriesError, updateCategory, deleteCategory } = useCategories(exerciseCategoriesService);
 
     const [name, setName] = useState(exercise?.name || '');
     const [selectedCategory, setSelectedCategory] = useState(exercise?.category || '');
@@ -31,7 +29,6 @@ export default function ExerciseFormScreen({ navigation, route }) {
     const [showCategoryForm, setShowCategoryForm] = useState(false);
     const [managingCategories, setManagingCategories] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
-    const [deletingCategory, setDeletingCategory] = useState(null);
     const [validationError, setValidationError] = useState(null);
 
     useEffect(() => {
@@ -49,7 +46,6 @@ export default function ExerciseFormScreen({ navigation, route }) {
             closeCategoryForm();
         } else {
             setEditingCategory(null);
-            setDeletingCategory(null);
             setShowCategoryForm(true);
         }
     };
@@ -83,6 +79,37 @@ export default function ExerciseFormScreen({ navigation, route }) {
         navigation.goBack();
     };
 
+    const onExerciseDelete = async () => {
+        Alert.alert(
+            'Delete',
+            'Are you sure you want to delete this exercise?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Delete', style: 'destructive', onPress: async () => {
+                        await deleteItem(exerciseId);
+                        navigation.goBack();
+                    }
+                }
+            ]
+        );
+    };
+
+    const onCategoryDelete = async (categoryId) => {
+        Alert.alert(
+            'Delete',
+            'Are you sure you want to delete this category?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Delete', style: 'destructive', onPress: async () => {
+                        await deleteCategory(categoryId);
+                    }
+                }
+            ]
+        );
+    };
+
     return (
         <Screen scroll edges={['left', 'right', 'bottom']}>
             <TextField
@@ -92,7 +119,7 @@ export default function ExerciseFormScreen({ navigation, route }) {
                 onChangeText={handleChangeName}
                 loading={exerciseLoading}
             />
-            {validationError?.name &&  <AppText variant="error">{validationError.name}</AppText>}
+            {validationError?.name && <AppText variant="error">{validationError.name}</AppText>}
 
             <View style={styles.group}>
                 <AppText variant="caption" muted>CATEGORY</AppText>
@@ -115,7 +142,6 @@ export default function ExerciseFormScreen({ navigation, route }) {
                         label={managingCategories ? 'Done managing' : 'Manage categories'}
                         onPress={() => {
                             setManagingCategories(!managingCategories);
-                            setDeletingCategory(null);
                             if (editingCategory) closeCategoryForm();
                         }}
                     />
@@ -131,13 +157,12 @@ export default function ExerciseFormScreen({ navigation, route }) {
                                 <AppText>{category.name}</AppText>
                             </View>
                             <Chip label="Edit" onPress={() => {
-                                setDeletingCategory(null);
                                 setEditingCategory(category);
                                 setShowCategoryForm(true);
                             }} />
                             <Chip label="Delete" onPress={() => {
                                 closeCategoryForm();
-                                setDeletingCategory(category);
+                                onCategoryDelete(category.id);
                             }} />
                         </View>
                     ))}
@@ -151,20 +176,12 @@ export default function ExerciseFormScreen({ navigation, route }) {
                         key={editingCategory?.id ?? 'new'}
                         category={editingCategory}
                         onCancel={closeCategoryForm}
-                        onAction={editingCategory ? undefined : addCategory}
-                        loading={editingCategory ? false : categoriesLoading}
+                        onAction={editingCategory ? updateCategory : addCategory}
+                        loading={categoriesLoading}
                         error={editingCategory ? null : categoriesError}
                     />
-                </View>}
-            {deletingCategory && (
-                <Card style={styles.group}>
-                    <AppText variant="subheading">Delete category?</AppText>
-                    <AppText>Delete {deletingCategory.name}?</AppText>
-                    <AppText variant="caption" muted>Deleting is not available yet.</AppText>
-                    <Button title="Delete category" variant="danger" icon="delete-outline" />
-                    <Button title="Cancel" variant="secondary" onPress={() => setDeletingCategory(null)} />
-                </Card>
-            )}
+                </View>
+            }
             <Button
                 title={exercise ? 'Save changes' : 'Add exercise'}
                 icon="check"
@@ -172,7 +189,7 @@ export default function ExerciseFormScreen({ navigation, route }) {
                 loading={exerciseLoading}
                 disabled={exerciseLoading || validationError}
             />
-            {exercise && <Button title="Delete exercise" variant="danger" icon="delete-outline" />}
+            {exercise && <Button title="Delete exercise" variant="danger" icon="delete-outline" onPress={onExerciseDelete} />}
         </Screen>
     );
 }

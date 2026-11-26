@@ -1,6 +1,7 @@
-import { FlatList, ScrollView, StyleSheet, View, ActivityIndicator } from 'react-native';
-import { useState, useEffect } from 'react';
-import { exerciseCategoryColors, spacing } from '../theme';
+import { FlatList, ScrollView, StyleSheet, View, ActivityIndicator, Alert } from 'react-native';
+import { useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { spacing } from '../theme';
 
 import Screen from '../components/Screen';
 import AppText from '../components/AppText';
@@ -15,13 +16,43 @@ import { exerciseService } from '../services';
 import { exerciseCategoriesService } from '../services';
 
 export default function ExercisesScreen({ navigation }) {
-    const { items, loading: exercisesLoading, fetchItems } = useItem(exerciseService, null);
+    const { items, loading: exercisesLoading, fetchItems, deleteItem } = useItem(exerciseService, null);
     const { categories, loading: categoriesLoading } = useCategories(exerciseCategoriesService);
     const [selectedCategory, setSelectedCategory] = useState('');
+    const [search, setSearch] = useState('');
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchItems({ search: search, category: selectedCategory });
+        }, [])
+    );
 
     const openForm = (exerciseId) => navigation.navigate('ExerciseForm', { exerciseId });
 
-    const handleSearch = async (text) => await fetchItems({ search: text });
+    const handleSearch = async (text) => {
+        setSearch(text);
+        await fetchItems({ search: text });
+    };
+
+    const handleSelectedCategory = async (categoryId) => {
+        setSelectedCategory(categoryId);
+        await fetchItems({ search: search, category: categoryId });
+    };
+
+    const onDelete = async (exerciseId) => {
+        Alert.alert(
+            'Delete',
+            'Are you sure you want to delete this exercise?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Delete', style: 'destructive', onPress: async () => {
+                        await deleteItem(exerciseId);
+                    }
+                }
+            ]
+        );
+    };
 
     return (
         <Screen edges={['left', 'right', 'bottom']}>
@@ -32,11 +63,17 @@ export default function ExercisesScreen({ navigation }) {
                     <ExerciseListItem
                         exercise={item}
                         onEdit={() => openForm(item.id)}
+                        onDelete={() => onDelete(item.id)}
                     />
                 )}
                 ListHeaderComponent={
                     <View style={styles.header}>
-                        <TextField icon="search" placeholder="Search exercises" onChangeText={handleSearch} />
+                        <TextField
+                            icon="search"
+                            placeholder="Search exercises"
+                            value={search}
+                            onChangeText={handleSearch}
+                        />
                         <ScrollView
                             horizontal
                             showsHorizontalScrollIndicator={false}
@@ -46,14 +83,14 @@ export default function ExercisesScreen({ navigation }) {
                                 <ActivityIndicator size="small" color="primary" />
                             ) : (
                                 <>
-                                    <Chip label="All" selected={selectedCategory === ''} onPress={() => setSelectedCategory('')} />
+                                    <Chip label="All" selected={selectedCategory === ''} onPress={() => handleSelectedCategory('')} />
                                     {categories.map((category) => (
                                         <Chip
                                             key={category.id}
                                             label={category.name}
                                             color={category.color}
                                             selected={selectedCategory === category.id}
-                                            onPress={() => setSelectedCategory(category.id)}
+                                            onPress={() => handleSelectedCategory(category.id)}
                                         />
                                     ))}
                                 </>
