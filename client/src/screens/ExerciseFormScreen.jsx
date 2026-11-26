@@ -20,7 +20,9 @@ import { exerciseCategoryColors, spacing } from '../theme';
 export default function ExerciseFormScreen({ navigation, route }) {
     // No exerciseId means we are adding a new exercise
     const exerciseId = route.params?.exerciseId;
-    const { item: exercise, loading: exerciseLoading, createItem, updateItem } = useItem(exerciseService, exerciseId, !exerciseId);
+    const addMode = exerciseId ? false : true;
+    const { item: exercise, loading: exerciseLoading, createItem, updateItem } = useItem(exerciseService, exerciseId, addMode);
+    console.log(exercise);
     const { categories, loading: categoriesLoading, addCategory, error: categoriesError } = useCategories(exerciseCategoriesService);
 
     const [name, setName] = useState(exercise?.name || '');
@@ -34,7 +36,7 @@ export default function ExerciseFormScreen({ navigation, route }) {
 
     useEffect(() => {
         setName(exercise?.name || '');
-        setSelectedCategory(exercise?.category || '');
+        setSelectedCategory(exercise?.category?.id || '');
     }, [exercise]);
 
     const closeCategoryForm = () => {

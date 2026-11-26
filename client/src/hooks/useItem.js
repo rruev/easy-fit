@@ -3,6 +3,7 @@ import { useFocusEffect } from "@react-navigation/native";
 
 export default function useItem(service, itemId, addMode=false) {
     const [items, setItems] = useState([]);
+    const [item, setItem] = useState(null);
     const [loading, setLoading] = useState(false);
 
     const fetchItems = async (filter = {}, signal) => {
@@ -12,7 +13,7 @@ export default function useItem(service, itemId, addMode=false) {
             setItems(data);
             setLoading(false);
         } catch (error) {
-            console.error(error);
+            console.error(JSON.stringify(error.response.data));
             setLoading(false);
         }
     };
@@ -21,7 +22,7 @@ export default function useItem(service, itemId, addMode=false) {
         try {
             setLoading(true);
             const data = await service.getById(itemId, signal);
-            setItems([data]);
+            setItem(data);
             setLoading(false);
         } catch (error) {
             console.error(error);
@@ -86,6 +87,7 @@ export default function useItem(service, itemId, addMode=false) {
 
     return {
         items,
+        item,
         setItems,
         loading,
         fetchItems,

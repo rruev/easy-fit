@@ -40,7 +40,7 @@ export default function LoginScreen({ navigation }) {
                 value={email}
                 onChangeText={setEmail}
             />
-            {error?.email && <AppText color={colors.error}>{error.email}</AppText>}
+            {error?.email && <AppText variant="error">{error.email}</AppText>}
             <TextField
                 label="Password"
                 icon="lock-outline"
@@ -49,11 +49,11 @@ export default function LoginScreen({ navigation }) {
                 value={password}
                 onChangeText={setPassword}
             />
-            {error?.password && <AppText color={colors.error}>{error.password}</AppText>}
+            {error?.password && <AppText variant="error">{error.password}</AppText>}
 
             <Button title="Log in" onPress={handleLogin} loading={loading} />
 
-            {error?.general && <AppText color={colors.error}>{error.general}</AppText>}
+            {error?.general && <AppText variant="error">{error.general}</AppText>}
             <View style={styles.footer}>
                 <AppText muted>Don't have an account?</AppText>
                 <AppText

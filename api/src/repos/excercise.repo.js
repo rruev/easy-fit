@@ -17,13 +17,18 @@ export const getAll = async (userId, filter) => {
         },
         take: filter.limit || 10,
         skip: filter.skip || 0,
-        include: { category: true }
+        include: {
+            category: true
+        }
     });
 };
 
 export const getById = async (exerciseId) => {
     return await prisma.exercise.findUnique({
-        where: { id: exerciseId }
+        where: { id: exerciseId },
+        include: {
+            category: true
+        }
     });
 };
 

@@ -45,7 +45,7 @@ export default function RegisterScreen({ navigation }) {
                 value={email}
                 onChangeText={setEmail}
             />
-            {error?.email && <AppText color={colors.error}>{error.email}</AppText>}
+            {error?.email && <AppText variant='error'>{error.email}</AppText>}
             <TextField
                 label="Password"
                 name="password"
@@ -55,7 +55,7 @@ export default function RegisterScreen({ navigation }) {
                 value={password}
                 onChangeText={setPassword}
             />
-            {error?.password && <AppText color={colors.error}>{error.password}</AppText>}
+            {error?.password && <AppText variant='error' >{error.password}</AppText>}
             <TextField
                 label="Confirm password"
                 name="confirmPassword"
@@ -65,10 +65,10 @@ export default function RegisterScreen({ navigation }) {
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
             />
-            {error?.confirmPassword && <AppText color={colors.error}>{error.confirmPassword}</AppText>}
+            {error?.confirmPassword && <AppText variant='error'>{error.confirmPassword}</AppText>}
 
             <Button title="Create account" onPress={handleCreateAccount} loading={loading} />
-            {error?.general && <AppText color={colors.error}>{error.general}</AppText>}
+            {error?.general && <AppText variant='error'>{error.general}</AppText>}
 
             <View style={styles.footer}>
                 <AppText muted>Already have an account?</AppText>
