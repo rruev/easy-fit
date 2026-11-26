@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 
-export default function useItem(service, itemId) {
+export default function useItem(service, itemId, addMode=false) {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    const fetchItems = async (filter={}, signal) => {
+    const fetchItems = async (filter = {}, signal) => {
         try {
             setLoading(true);
             const data = await service.getAll(filter, signal);
@@ -64,18 +65,24 @@ export default function useItem(service, itemId) {
         }
     };
 
-    useEffect(() => {
-        const controller = new AbortController();
-        const signal = controller.signal;
+    useFocusEffect(
+        useCallback(() => {
+            const controller = new AbortController();
+            const signal = controller.signal;
 
-        if (itemId) {
-            fetchItem(signal);
-        } else {
-            fetchItems({}, signal);
-        }
+            if (addMode) {
+                return () => controller.abort();
+            }
 
-        return () => controller.abort();
-    }, [itemId]);
+            if (itemId) {
+                fetchItem(signal);
+            } else {
+                fetchItems({}, signal);
+            }
+
+            return () => controller.abort();
+        }, [itemId, addMode])
+    );
 
     return {
         items,

@@ -3,7 +3,7 @@ import { getErrors } from "../utils/errors.util.js";
 
 export const create = async (req, res) => {
     try {
-        const category = await exerciseCategoryService.create(req.body);
+        const category = await exerciseCategoryService.create(req.user.id, req.body);
         res.status(201).json(category);
     } catch (error) {
         const errors = getErrors(error);
@@ -12,8 +12,9 @@ export const create = async (req, res) => {
 };
 
 export const getAll = async (req, res) => {
+    const userId = req.user.id;
     try {
-        const categories = await exerciseCategoryService.getAll();
+        const categories = await exerciseCategoryService.getAll(userId);
         res.status(200).json(categories);
     } catch (error) {
         const errors = getErrors(error);
@@ -23,7 +24,7 @@ export const getAll = async (req, res) => {
 
 export const getById = async (req, res) => {
     try {
-        const category = await exerciseCategoryService.getById(req.params.id);
+        const category = await exerciseCategoryService.getById(req.params.id, req.user.id);
         res.status(200).json(category);
     } catch (error) {
         const errors = getErrors(error);
@@ -33,7 +34,7 @@ export const getById = async (req, res) => {
 
 export const update = async (req, res) => {
     try {
-        const category = await exerciseCategoryService.update(req.params.id, req.body);
+        const category = await exerciseCategoryService.update(req.params.id, req.user.id, req.body);
         res.status(200).json(category);
     } catch (error) {
         const errors = getErrors(error);
@@ -43,7 +44,7 @@ export const update = async (req, res) => {
 
 export const remove = async (req, res) => {
     try {
-        const category = await exerciseCategoryService.remove(req.params.id);
+        const category = await exerciseCategoryService.remove(req.params.id, req.user.id);
         res.status(200).json(category);
     } catch (error) {
         const errors = getErrors(error);

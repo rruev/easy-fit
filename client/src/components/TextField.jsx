@@ -1,12 +1,12 @@
+import { View, TextInput, StyleSheet, ActivityIndicator } from 'react-native';
 import { useState } from 'react';
-import { View, TextInput, StyleSheet } from 'react-native';
 import Icon from '@expo/vector-icons/MaterialIcons';
 
 import AppText from './AppText';
 import { colors, radius, spacing } from '../theme';
 
 // Any extra prop (secureTextEntry, keyboardType, defaultValue...) is passed straight to TextInput
-export default function TextField({ label, icon, multiline = false, style, ...rest }) {
+export default function TextField({ label, icon, multiline = false, style, loading, ...rest }) {
     const [focused, setFocused] = useState(false);
 
     return (
@@ -14,15 +14,19 @@ export default function TextField({ label, icon, multiline = false, style, ...re
             {label && <AppText variant="caption" muted>{label.toUpperCase()}</AppText>}
             <View style={[styles.field, focused && styles.focused, multiline && styles.multiline]}>
                 {icon && <Icon name={icon} size={20} color={colors.textMuted} />}
-                <TextInput
-                    style={[styles.input, multiline && styles.inputMultiline, style]}
-                    placeholderTextColor={colors.textMuted}
-                    selectionColor={colors.primary}
-                    multiline={multiline}
-                    onFocus={() => setFocused(true)}
-                    onBlur={() => setFocused(false)}
-                    {...rest}
-                />
+                {loading ? (
+                    <ActivityIndicator size="small" color={colors.primary} />
+                ) : (
+                    <TextInput
+                        style={[styles.input, multiline && styles.inputMultiline, style]}
+                        placeholderTextColor={colors.textMuted}
+                        selectionColor={colors.primary}
+                        multiline={multiline}
+                        onFocus={() => setFocused(true)}
+                        onBlur={() => setFocused(false)}
+                        {...rest}
+                    />
+                )}
             </View>
         </View>
     );

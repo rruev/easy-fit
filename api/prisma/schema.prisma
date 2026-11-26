@@ -13,13 +13,15 @@ datasource db {
 }
 
 model User {
-    id        String     @id @default(cuid())
-    email     String     @unique
-    password  String
-    createdAt DateTime   @default(now())
-    workouts  Workout[]
-    exercises Exercise[]
-    schedule  Schedule?
+    id                 String             @id @default(cuid())
+    email              String             @unique
+    password           String
+    createdAt          DateTime           @default(now())
+    workouts           Workout[]
+    exercises          Exercise[]
+    schedule           Schedule?
+    exerciseCategories ExerciseCategory[]
+    workoutCategories  WorkoutCategory[]
 
     @@map("users")
 }
@@ -47,10 +49,10 @@ enum TargetType {
 model WorkoutExercise {
     workoutId   String
     exerciseId  String
-    position    Int 
+    position    Int
     sets        Int
     targetType  TargetType @default(reps)
-    target      Int 
+    target      Int
     restSeconds Int        @default(0)
     workout     Workout    @relation(fields: [workoutId], references: [id])
     exercise    Exercise   @relation(fields: [exerciseId], references: [id])
@@ -95,20 +97,24 @@ model ScheduleWorkout {
 }
 
 model ExerciseCategory {
-    id    String @id @default(cuid())
-    name  String @unique
-    color String
+    id     String @id @default(cuid())
+    userId String
+    name   String @unique
+    color  String
 
-    exercises Exercise[] 
+    exercises Exercise[]
+    user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@map("exercise_categories")
 }
 
 model WorkoutCategory {
-    id    String @id @default(cuid())
-    name  String @unique
-    color String
+    id     String @id @default(cuid())
+    userId String
+    name   String @unique
+    color  String
 
+    user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
     workouts Workout[]
 
     @@map("workout_categories")

@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function useCategories(service) {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const fetchCategories = async () => {
         try {
@@ -11,14 +13,28 @@ export default function useCategories(service) {
             setCategories(data);
             setLoading(false);
         } catch (error) {
-            console.error(error);
+            setError(error);
             setLoading(false);
         }
     };
 
-    useEffect(() => {
-        fetchCategories();
-    }, []);
+    const addCategory = async (category) => {
+        try {
+            setLoading(true);
+            const newCategory = await service.create(category);
+            setCategories((prev) => [...prev, newCategory]);
+            setLoading(false);
+        } catch (error) {
+            setError(error);
+            setLoading(false);
+        }
+    };
 
-    return { categories, loading };
+    useFocusEffect(
+        useCallback(() => {
+            fetchCategories();
+        }, [])
+    );
+
+    return { categories, loading, error, addCategory };
 }

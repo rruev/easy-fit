@@ -1,5 +1,5 @@
 import { FlatList, ScrollView, StyleSheet, View, ActivityIndicator } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { exerciseCategoryColors, spacing } from '../theme';
 
 import Screen from '../components/Screen';
@@ -12,11 +12,12 @@ import FloatingButton from '../components/FloatingButton';
 import useItem from '../hooks/useItem';
 import useCategories from '../hooks/useCategories';
 import { exerciseService } from '../services';
+import { exerciseCategoriesService } from '../services';
 
 export default function ExercisesScreen({ navigation }) {
     const { items, loading: exercisesLoading, fetchItems } = useItem(exerciseService, null);
-    const { categories } = useCategories(exerciseService);
-    const [selectedCategory, setSelectedCategory] = useState('All');
+    const { categories, loading: categoriesLoading } = useCategories(exerciseCategoriesService);
+    const [selectedCategory, setSelectedCategory] = useState('');
 
     const openForm = (exerciseId) => navigation.navigate('ExerciseForm', { exerciseId });
 
@@ -30,7 +31,6 @@ export default function ExercisesScreen({ navigation }) {
                 renderItem={({ item }) => (
                     <ExerciseListItem
                         exercise={item}
-                        onPress={() => openForm(item.id)}
                         onEdit={() => openForm(item.id)}
                     />
                 )}
@@ -42,16 +42,22 @@ export default function ExercisesScreen({ navigation }) {
                             showsHorizontalScrollIndicator={false}
                             contentContainerStyle={styles.filters}
                         >
-                            <Chip label="All" selected={selectedCategory === 'All'} onPress={() => setSelectedCategory('All')} />
-                            {categories.map((category) => (
-                                <Chip
-                                    key={category}
-                                    label={category}
-                                    color={category.color}
-                                    selected={selectedCategory === category}
-                                    onPress={() => setSelectedCategory(category)}
-                                />
-                            ))}
+                            {categoriesLoading ? (
+                                <ActivityIndicator size="small" color="primary" />
+                            ) : (
+                                <>
+                                    <Chip label="All" selected={selectedCategory === ''} onPress={() => setSelectedCategory('')} />
+                                    {categories.map((category) => (
+                                        <Chip
+                                            key={category.id}
+                                            label={category.name}
+                                            color={category.color}
+                                            selected={selectedCategory === category.id}
+                                            onPress={() => setSelectedCategory(category.id)}
+                                        />
+                                    ))}
+                                </>
+                            )}
                         </ScrollView>
                         <AppText variant="caption" muted>{items.count} EXERCISES</AppText>
                         {exercisesLoading && <ActivityIndicator size="small" color="primary" />}

@@ -15,7 +15,7 @@ export const create = async (data) => {
         const response = await api.post("/exercises", data);
         return response.data;
     } catch (error) {
-        console.error(error);
+        console.error(JSON.stringify(error.response.data));
         throw error;
     }
 };

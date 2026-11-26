@@ -13,10 +13,10 @@ export default function ExerciseListItem({ exercise, onPress, onEdit, onDelete }
             <View style={[styles.stripe, { backgroundColor: accent }]} />
             <View style={styles.info}>
                 <AppText variant="subheading">{exercise.name}</AppText>
-                <AppText variant="caption" color={accent}>{exercise.category.toUpperCase()}</AppText>
-                <AppText variant="caption" muted>
+                {/* <AppText variant="caption" color={accent}>{exercise.category.toUpperCase()}</AppText> */}
+                {/* <AppText variant="caption" muted>
                     {exercise.sets} sets · {exercise.target}
-                </AppText>
+                </AppText> */}
             </View>
             <IconButton name="edit" size={40} onPress={onEdit} />
             <IconButton name="delete-outline" size={40} onPress={onDelete} />

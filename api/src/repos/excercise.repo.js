@@ -17,6 +17,7 @@ export const getAll = async (userId, filter) => {
         },
         take: filter.limit || 10,
         skip: filter.skip || 0,
+        include: { category: true }
     });
 };
 
