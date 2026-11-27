@@ -13,9 +13,6 @@ export default function ExerciseListItem({ exercise, onPress, onEdit, onDelete }
             <View style={styles.info}>
                 <AppText variant="subheading">{exercise.name}</AppText>
                 <AppText variant="caption" color={exercise.category.color}>{exercise.category.name.toUpperCase()}</AppText>
-                {/* <AppText variant="caption" muted>
-                    {exercise.sets} sets · {exercise.target}
-                </AppText> */}
             </View>
             <IconButton name="edit" size={40} onPress={onEdit} />
             <IconButton name="delete-outline" size={40} onPress={onDelete} />

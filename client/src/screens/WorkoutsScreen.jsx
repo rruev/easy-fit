@@ -1,16 +1,21 @@
-import { FlatList, ScrollView, StyleSheet, View } from 'react-native';
+import { FlatList, ScrollView, StyleSheet, View, ActivityIndicator } from 'react-native';
 
 import Screen from '../components/Screen';
 import Chip from '../components/Chip';
 import WorkoutCard from '../components/WorkoutCard';
 import FloatingButton from '../components/FloatingButton';
 import NavCard from '../components/NavCard';
-import { categories, exercises, workouts } from '../data/mockData';
-import { categoryColors, spacing } from '../theme';
+
+import { workoutCategoriesService } from '../services';
+import useCategories from '../hooks/useCategories';
+import { exercises, workouts } from '../data/mockData';
+import { spacing } from '../theme';
 
 const selectedCategory = 'All';
 
 export default function WorkoutsScreen({ navigation }) {
+    const { categories, loading: categoriesLoading } = useCategories(workoutCategoriesService);
+
     const openDetails = () =>
         navigation.navigate('WorkoutNavigator', { screen: 'WorkoutDetails' });
     const openExercises = () =>
@@ -26,27 +31,31 @@ export default function WorkoutsScreen({ navigation }) {
                 renderItem={({ item }) => <WorkoutCard workout={item} onPress={openDetails} />}
                 ListHeaderComponent={
                     <View style={styles.header}>
-                    <NavCard
-                        icon="list-alt"
-                        title="Exercise library"
-                        subtitle={`${exercises.length} exercises · add, edit and remove`}
-                        onPress={openExercises}
-                    />
-                    <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={styles.filters}
-                    >
-                        <Chip label="All" selected={selectedCategory === 'All'} />
-                        {categories.map((category) => (
-                            <Chip
-                                key={category}
-                                label={category}
-                                color={categoryColors[category]}
-                                selected={selectedCategory === category}
-                            />
-                        ))}
-                    </ScrollView>
+                        <NavCard
+                            icon="list-alt"
+                            title="Exercise library"
+                            subtitle={`${exercises.length} exercises · add, edit and remove`}
+                            onPress={openExercises}
+                        />
+                        <ScrollView
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={styles.filters}
+                        >
+                            {categoriesLoading ? <ActivityIndicator size="small" color="primary" /> : (
+                                <>
+                                    <Chip label="All" selected={selectedCategory === 'All'} />
+                                    {categories.map((category) => (
+                                        <Chip
+                                            key={category.id}
+                                            label={category.name}
+                                            color={category.color}
+                                            selected={selectedCategory === category.name}
+                                        />
+                                    ))}
+                                </>
+                            )}
+                        </ScrollView>
                     </View>
                 }
                 ItemSeparatorComponent={() => <View style={styles.separator} />}

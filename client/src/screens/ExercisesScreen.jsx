@@ -105,7 +105,6 @@ export default function ExercisesScreen({ navigation }) {
                 }
                 ItemSeparatorComponent={() => <View style={styles.separator} />}
                 contentContainerStyle={styles.list}
-                onEndReached={() => fetchItems({ search: search, category: selectedCategory, skip: items.length })}
             />
             <FloatingButton onPress={() => openForm()} />
         </Screen>

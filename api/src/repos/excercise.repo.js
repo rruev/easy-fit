@@ -16,10 +16,13 @@ export const getAll = async (userId, filter) => {
             },
             categoryId: filter.category || undefined
         },
-        take: filter.limit || 10,
+        take: filter.limit || undefined,
         skip: filter.skip || 0,
         include: {
             category: true
+        },
+        orderBy: {
+            name: "asc"
         }
     });
 };

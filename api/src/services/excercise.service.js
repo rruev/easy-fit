@@ -5,7 +5,12 @@ export const create = async (userId, data) => {
 };
 
 export const getAll = async (userId, filter) => {
-    filter.skip = Number(filter.skip) || 0;
+    if (filter.skip) {
+        filter.skip = Number(filter.skip) || 0;
+    }
+    if (filter.limit) {
+        filter.limit = Number(filter.limit) || 10;
+    }
     const exercises = await exerciseRepo.getAll(userId, filter);
     const count = await exerciseRepo.getCount(userId, filter);
     return { exercises, count };
