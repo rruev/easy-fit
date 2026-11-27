@@ -27,16 +27,17 @@ model User {
 }
 
 model Workout {
-    id         String            @id @default(cuid())
-    userId     String
-    name       String
-    categoryId String
-    createdAt  DateTime          @default(now())
-    duration   Int
-    user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-    scheduled  ScheduleWorkout[]
-    exercises  WorkoutExercise[]
-    category   WorkoutCategory   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+    id          String            @id @default(cuid())
+    userId      String
+    name        String
+    description String?
+    categoryId  String
+    createdAt   DateTime          @default(now())
+    duration    Int
+    user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+    scheduled   ScheduleWorkout[]
+    exercises   WorkoutExercise[]
+    category    WorkoutCategory   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
     @@map("workouts")
 }

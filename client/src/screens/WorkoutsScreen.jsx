@@ -6,20 +6,25 @@ import WorkoutCard from '../components/WorkoutCard';
 import FloatingButton from '../components/FloatingButton';
 import NavCard from '../components/NavCard';
 
-import { workoutCategoriesService } from '../services';
+import { workoutCategoriesService, workoutService } from '../services';
 import useCategories from '../hooks/useCategories';
-import { exercises, workouts } from '../data/mockData';
+import useItem from '../hooks/useItem';
+
+import { exercises } from '../data/mockData';
 import { spacing } from '../theme';
 
 const selectedCategory = 'All';
 
 export default function WorkoutsScreen({ navigation }) {
+    const { items: workouts, loading: workoutsLoading } = useItem(workoutService);
     const { categories, loading: categoriesLoading } = useCategories(workoutCategoriesService);
 
     const openDetails = () =>
         navigation.navigate('WorkoutNavigator', { screen: 'WorkoutDetails' });
+
     const openExercises = () =>
         navigation.navigate('WorkoutNavigator', { screen: 'Exercises' });
+    
     const openAddEdit = () =>
         navigation.navigate('WorkoutNavigator', { screen: 'AddEditWorkout' });
 
@@ -27,6 +32,7 @@ export default function WorkoutsScreen({ navigation }) {
         <Screen>
             <FlatList
                 data={workouts}
+                refreshing={workoutsLoading}
                 keyExtractor={(workout) => workout.id}
                 renderItem={({ item }) => <WorkoutCard workout={item} onPress={openDetails} />}
                 ListHeaderComponent={
