@@ -3,22 +3,22 @@ import { View, StyleSheet } from 'react-native';
 import AppText from './AppText';
 import { colors, radius, spacing } from '../theme';
 
-export default function ExerciseRow({ index, exercise, active = false }) {
+export default function ExerciseRow({ exercise, active = false }) {
     return (
         <View style={[styles.row, active && styles.active]}>
             <View style={[styles.badge, active && styles.badgeActive]}>
                 <AppText variant="caption" color={active ? colors.onPrimary : colors.textMuted}>
-                    {index}
+                    {exercise.position}
                 </AppText>
             </View>
             <View style={styles.info}>
-                <AppText variant="subheading">{exercise.name}</AppText>
+                <AppText variant="subheading">{exercise.exercise.name}</AppText>
                 <AppText variant="caption" muted>
-                    {exercise.sets} {exercise.sets === 1 ? 'set' : 'sets'} · {exercise.target}
+                    {exercise.sets} {exercise.sets === 1 ? 'set' : 'sets'} · {exercise.target} reps
                 </AppText>
             </View>
-            {exercise.rest > 0 && (
-                <AppText variant="caption" muted>{exercise.rest}s rest</AppText>
+            {exercise.restSeconds > 0 && (
+                <AppText variant="caption" muted>{exercise.restSeconds}s rest</AppText>
             )}
         </View>
     );

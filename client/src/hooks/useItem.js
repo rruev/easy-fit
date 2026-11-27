@@ -4,16 +4,28 @@ export default function useItem(service, itemId, addMode = false) {
     const [items, setItems] = useState([]);
     const [item, setItem] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    const updateList = (update) => {
+        setItems(prevItems => {
+            if (Array.isArray(prevItems)) return update(prevItems);
+            return { ...prevItems, exercises: update(prevItems.exercises) };
+        });
+    };
 
     const fetchItems = async (filter = {}, signal) => {
         try {
             setLoading(true);
+            setError(null);
             setItems([]);
             const data = await service.getAll(filter, signal);
             setItems(data);
-            setLoading(false);
         } catch (error) {
-            console.error(JSON.stringify(error.response.data));
+            if (!signal?.aborted) {
+                console.error(error);
+                setError(error);
+            }
+        } finally {
             setLoading(false);
         }
     };
@@ -21,11 +33,15 @@ export default function useItem(service, itemId, addMode = false) {
     const fetchItem = async (signal) => {
         try {
             setLoading(true);
+            setError(null);
             const data = await service.getById(itemId, signal);
             setItem(data);
-            setLoading(false);
         } catch (error) {
-            console.error(error);
+            if (!signal?.aborted) {
+                console.error(error);
+                setError(error);
+            }
+        } finally {
             setLoading(false);
         }
     };
@@ -33,11 +49,15 @@ export default function useItem(service, itemId, addMode = false) {
     const createItem = async (data) => {
         try {
             setLoading(true);
+            setError(null);
             const newItem = await service.create(data);
-            setItems(prevItems => ({ ...prevItems, exercises: [...prevItems.exercises, newItem] }));
-            setLoading(false);
+            updateList(items => [...items, newItem]);
+            return true;
         } catch (error) {
             console.error(error);
+            setError(error);
+            return false;
+        } finally {
             setLoading(false);
         }
     };
@@ -45,11 +65,16 @@ export default function useItem(service, itemId, addMode = false) {
     const updateItem = async (data) => {
         try {
             setLoading(true);
+            setError(null);
             const updatedItem = await service.update(itemId, data);
-            setItems(prevItems => ({ ...prevItems, exercises: prevItems.exercises.map(item => item.id === itemId ? updatedItem : item) }));
-            setLoading(false);
+            setItem(updatedItem);
+            updateList(items => items.map(item => item.id === itemId ? updatedItem : item));
+            return true;
         } catch (error) {
             console.error(error);
+            setError(error);
+            return false;
+        } finally {
             setLoading(false);
         }
     };
@@ -57,11 +82,15 @@ export default function useItem(service, itemId, addMode = false) {
     const deleteItem = async (id) => {
         try {
             setLoading(true);
+            setError(null);
             await service.remove(id);
-            setItems(prevItems => ({ ...prevItems, exercises: prevItems.exercises.filter(item => item.id !== id) }));
-            setLoading(false);
+            updateList(items => items.filter(item => item.id !== id));
+            return true;
         } catch (error) {
             console.error(error);
+            setError(error);
+            return false;
+        } finally {
             setLoading(false);
         }
     };
@@ -89,6 +118,7 @@ export default function useItem(service, itemId, addMode = false) {
         item,
         setItems,
         loading,
+        error,
         fetchItems,
         fetchItem,
         createItem,

@@ -1,6 +1,5 @@
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import Icon from '@expo/vector-icons/MaterialIcons';
-import { useNavigation, useRoute } from '@react-navigation/native';
 
 import Screen from '../components/Screen';
 import AppText from '../components/AppText';
@@ -10,16 +9,27 @@ import MetaItem from '../components/MetaItem';
 import SectionHeader from '../components/SectionHeader';
 import ExerciseRow from '../components/ExerciseRow';
 import Button from '../components/Button';
-import { workouts } from '../data/mockData';
+
+import { workoutService } from '../services';
+import useItem from '../hooks/useItem';
+
 import { categoryColors, spacing } from '../theme';
 
-const workout = workouts[0];
-
-export default function WorkoutDetailsScreen() {
-    const navigation = useNavigation();
-    const route = useRoute();
+export default function WorkoutDetailsScreen({ route, navigation }) {
     const isTimerNav = route?.params?.isTimerNav;
-    const accent = categoryColors[workout.category];
+    const workoutId = route?.params?.workoutId;
+
+    const { item: workout, loading: workoutLoading } = useItem(workoutService, workoutId);
+
+    const accent = workout?.category?.color;
+
+    if (workoutLoading) {
+        return (
+            <Screen>
+                <ActivityIndicator size="large" color="primary" style={styles.loader} />
+            </Screen>
+        );
+    }
 
     return (
         <Screen scroll edges={['left', 'right', 'bottom']}>
@@ -27,19 +37,19 @@ export default function WorkoutDetailsScreen() {
                 <View style={[styles.iconBox, { backgroundColor: accent + '26' }]}>
                     <Icon name="fitness-center" size={32} color={accent} />
                 </View>
-                <Chip label={workout.category} color={accent} selected />
-                <AppText variant="title">{workout.name}</AppText>
-                <AppText muted>{workout.description}</AppText>
+                <Chip label={workout?.category.name} color={accent} selected />
+                <AppText variant="title">{workout?.name}</AppText>
+                <AppText muted>{workout?.description}</AppText>
                 <View style={styles.meta}>
-                    <MetaItem icon="schedule" label={`${workout.duration} min`} />
-                    <MetaItem icon="list" label={`${workout.exercises.length} exercises`} />
-                    <MetaItem icon="bolt" label={workout.level} />
+                    <MetaItem icon="schedule" label={`${workout?.duration} min`} />
+                    <MetaItem icon="list" label={`${workout?.exercises.length} exercises`} />
+                    {/* <MetaItem icon="bolt" label={workout.level} /> */}
                 </View>
             </Card>
 
             <SectionHeader title="Exercises" />
-            {workout.exercises.map((exercise, index) => (
-                <ExerciseRow key={exercise.id} index={index + 1} exercise={exercise} />
+            {workout?.exercises.map((exercise) => (
+                <ExerciseRow key={exercise.exerciseId} exercise={exercise} />
             ))}
 
             {isTimerNav ? (
@@ -52,7 +62,7 @@ export default function WorkoutDetailsScreen() {
                 <Button
                     title="Edit workout"
                     icon="edit"
-                    onPress={() => navigation.navigate('AddEditWorkout')}
+                    onPress={() => navigation.navigate('AddEditWorkout', { workoutId })}
                 />
             )}
         </Screen>
@@ -74,5 +84,10 @@ const styles = StyleSheet.create({
     meta: {
         flexDirection: 'row',
         gap: spacing.lg,
+    },
+    loader: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });

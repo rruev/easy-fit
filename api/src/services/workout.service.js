@@ -1,4 +1,4 @@
-import { workoutRepo } from '../repos/index.js ';
+import { workoutRepo } from '../repos/index.js';
 
 export const create = async (data) => {
     const duration = 10;

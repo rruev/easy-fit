@@ -4,10 +4,10 @@ import Icon from '@expo/vector-icons/MaterialIcons';
 import Card from './Card';
 import AppText from './AppText';
 import MetaItem from './MetaItem';
-import { categoryColors, colors, spacing } from '../theme';
+import { colors, spacing } from '../theme';
 
 export default function WorkoutCard({ workout, onPress }) {
-    const accent = categoryColors[workout.category];
+    const accent = workout.category.color
 
     return (
         <Card onPress={onPress} style={styles.card}>
@@ -16,7 +16,7 @@ export default function WorkoutCard({ workout, onPress }) {
             </View>
             <View style={styles.info}>
                 <AppText variant="subheading">{workout.name}</AppText>
-                <AppText variant="caption" color={accent}>{workout.category.toUpperCase()}</AppText>
+                <AppText variant="caption" color={accent}>{workout.category.name.toUpperCase()}</AppText>
                 <View style={styles.meta}>
                     <MetaItem icon="schedule" label={`${workout.duration} min`} />
                     <MetaItem icon="list" label={`${workout.exercises.length} exercises`} />
